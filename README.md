@@ -5,7 +5,7 @@ Find PowerShell Gallery modules and all their statistics
 
 Copy this script down and save it to a local directory and run the following command: Import-Module Get-PSGalleryModules.ps1
 
-- EXAMPLE 1: Get-PSGalleryModules PSUtil,PSFramework,PSServicePrincipal
+- EXAMPLE 1: Get-PSGalleryModules ModuleOne, ModuleTwo, ModuleThree
 
     Returns stats for the following modules PSUtil,PSFramework,PSServicePrincipal
 
