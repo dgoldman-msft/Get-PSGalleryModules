@@ -149,16 +149,12 @@ Function Get-PSGalleryModules {
                 }
             }
             if ($parameters.ContainsKey('Update')) {
-                foreach ($object in $objects) {
-                    if (-NOT ($parameters.ContainsKey('DisableProgressBar'))) {
-                        $policyCounter ++
-                        Write-Progress -Activity "Querying module list. List contains $($object.Count) modules" -Status "Querying module list #: $progressCounter" -PercentComplete ($progressCounter / $object.count * 100)
-                        $progressCounter ++
-                    }
+                foreach ($object in $objects | Where-Object Updatable -eq 'Yes') {
                     if ($currentVersion = Get-Module $object.Name -ListAvailable -ErrorAction SilentlyContinue) {
                         if ($currentVersion[0].Version.ToString() -lt $object.PSGallery) {
-                            Write-Output "Module: $($object.Name) being updated to the latest version"
+                            Write-Output "Module: $($object.Name) being updated to the latest version. Installing module"
                             Install-Module -Name $object.Name -Repository PSGallery -Force -ErrorAction SilentlyContinue
+                            Write-Output "Importing module: $($object.Name)"
                             Import-Module -Name $object.Name -Force -ErrorAction SilentlyContinue
 
                             # Update the object version because we updated to latest
@@ -177,7 +173,7 @@ Function Get-PSGalleryModules {
             if ($parameters.ContainsKey('ShowFull')) { $objects | Sort-Object Name } else { $objects | Select-Object Name, Downloads, 'PSG Version', 'Local Version', 'PSEdition', 'Updatable', 'Local Path' | Sort-Object Name }
         }
         catch {
-            Stop-PSFFunction -String 'Failure' -Cmdlet $PSCmdlet -ErrorRecord $_ -EnableException $EnableException
+            Write-Output "ERROR: $_"
             return
         }
     }
